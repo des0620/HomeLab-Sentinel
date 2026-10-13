@@ -3,755 +3,992 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>HomeLab Sentinel</title>
+    <title>HomeLab Sentinel | Monitoring Dashboard</title>
 
-  <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-  <!-- Midnight Blue Theme -->
-  <link
-    rel="stylesheet"
-    href="{{ url_for('static', filename='style.css') }}"
-  >
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+        .sentinel-header {
+            background: linear-gradient(135deg, #172338, #0b1220);
+            border: 1px solid #34445f;
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .sentinel-subtitle {
+            color: #b8c7dc;
+        }
+
+        .section-heading {
+            border-left: 4px solid #4e9bff;
+            padding-left: 12px;
+            margin-bottom: 18px;
+        }
+
+        .metric-card {
+            border: 1px solid #34445f;
+            border-radius: 14px;
+            height: 100%;
+        }
+
+        .metric-label {
+            color: #b8c7dc;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .metric-note {
+            color: #b8c7dc;
+            font-size: 0.8rem;
+        }
+
+        .sentinel-card {
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .sentinel-card .card-body {
+            padding: 24px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            margin-right: 7px;
+        }
+
+        .status-running {
+            background: #31c48d;
+        }
+
+        .status-stopped {
+            background: #f05252;
+        }
+
+        .sentinel-table th {
+            color: #c8d5e7;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .sentinel-table td {
+            vertical-align: middle;
+        }
+
+        .event-controls form {
+            display: inline-block;
+        }
+
+        .event-controls .btn {
+            min-height: 40px;
+        }
+
+        .alert-item {
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .alert-action {
+            margin-top: 10px;
+        }
+
+        .dashboard-footer {
+            border-top: 1px solid #34445f;
+            padding-top: 20px;
+            margin-top: 32px;
+        }
+
+        .demo-label {
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 576px) {
+            .sentinel-header {
+                padding: 20px;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .sentinel-card .card-body {
+                padding: 18px;
+            }
+
+            .event-controls .btn {
+                width: 100%;
+            }
+
+            .event-controls form {
+                display: block;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<main class="container py-5">
+<main class="container py-4 py-md-5">
 
-  <!-- ======================================= -->
-  <!-- HEADER -->
-  <!-- ======================================= -->
+    <!-- ====================================== -->
+    <!-- DASHBOARD HEADER -->
+    <!-- ====================================== -->
 
-  <header class="mb-4">
+    <header class="sentinel-header mb-4">
 
-    <h1>HomeLab Sentinel</h1>
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
 
-    <p class="text-secondary">
-      Server Monitoring &amp; Security Dashboard — Demo Mode
-    </p>
+            <div>
+                <div class="demo-label text-info mb-2">
+                    HomeLab Monitoring Platform
+                </div>
 
-  </header>
+                <h1 class="mb-2">
+                    HomeLab Sentinel
+                </h1>
 
-  <!-- Demo Disclaimer -->
+                <p class="sentinel-subtitle mb-0">
+                    Server Monitoring, Security Analysis
+                    &amp; AI-Assisted Troubleshooting
+                </p>
+            </div>
 
-  <div class="alert alert-info">
-    Displaying simulated data for Demo Server.
-    Live monitoring and security detection are not enabled.
-  </div>
+            <div>
+                <span class="badge text-bg-primary px-3 py-2">
+                    DEMO MODE
+                </span>
+            </div>
 
+        </div>
 
-  <!-- ======================================= -->
-  <!-- SYSTEM METRICS -->
-  <!-- ======================================= -->
+    </header>
 
-  <section class="mb-4">
+    <div class="alert alert-info mb-4" role="status">
+        <strong>Simulation Environment:</strong>
+        All metrics, service failures, logs, and security events
+        are generated for demonstration purposes.
+        No live server or network monitoring is enabled.
+    </div>
 
-    <h2 class="h4 mb-3">
-      System Metrics
-    </h2>
+    <!-- ====================================== -->
+    <!-- SERVER MONITORING -->
+    <!-- ====================================== -->
 
-    <div class="row g-3">
+    <section class="mb-4" aria-labelledby="server-heading">
 
-      {% for label, value in [
-        ('CPU Usage', server.cpu),
-        ('Memory Usage', server.memory),
-        ('Storage Usage', server.storage)
-      ] %}
+        <h2 id="server-heading" class="h4 section-heading">
+            Server Monitoring
+        </h2>
 
-      <div class="col-md-4">
+        <p class="text-secondary small mb-3">
+            Current simulated resource usage for Demo Server.
+        </p>
 
-        <div class="card h-100">
-          <div class="card-body">
+        <div class="row g-3">
 
-            <h3 class="h6">
-              {{ label }}
-            </h3>
+            {% for label, value in [
+                ('CPU Usage', server.cpu),
+                ('Memory Usage', server.memory),
+                ('Storage Usage', server.storage)
+            ] %}
 
-            <p class="display-6">
-              {{ value }}%
-            </p>
+            <div class="col-md-4">
 
-            <div
-              class="progress"
-              role="progressbar"
-              aria-label="{{ label }}"
-              aria-valuenow="{{ value }}"
-              aria-valuemin="0"
-              aria-valuemax="100"
-            >
+                <div class="card metric-card">
 
-              <div
-                class="progress-bar {% if value >= 90 %}bg-danger{% endif %}"
-                style="width: {{ value }}%"
-              ></div>
+                    <div class="card-body">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+
+                            <h3 class="metric-label mb-0">
+                                {{ label }}
+                            </h3>
+
+                            {% if value >= 90 %}
+                                <span class="badge text-bg-danger">
+                                    Critical
+                                </span>
+                            {% elif value >= 75 %}
+                                <span class="badge text-bg-warning">
+                                    Elevated
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-success">
+                                    Normal
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                        <div class="metric-value mb-3">
+                            {{ value }}%
+                        </div>
+
+                        <div
+                            class="progress"
+                            role="progressbar"
+                            aria-label="{{ label }}"
+                            aria-valuenow="{{ value }}"
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            style="height: 10px;"
+                        >
+
+                            <div
+                                class="progress-bar
+                                {% if value >= 90 %}
+                                    bg-danger
+                                {% elif value >= 75 %}
+                                    bg-warning
+                                {% else %}
+                                    bg-primary
+                                {% endif %}"
+                                style="width: {{ value }}%"
+                            ></div>
+
+                        </div>
+
+                        <div class="metric-note mt-2">
+                            Simulated utilization
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
-          </div>
-        </div>
-
-      </div>
-
-      {% endfor %}
-
-    </div>
-
-  </section>
-
-
-  <!-- ======================================= -->
-  <!-- SERVICE STATUS -->
-  <!-- ======================================= -->
-
-  <section class="card mb-4">
-
-    <div class="card-body">
-
-      <h2 class="h5">
-        Service Status
-      </h2>
-
-      <div class="table-responsive">
-
-        <table class="table">
-
-          <thead>
-            <tr>
-              <th>Service</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            {% for service in server.services %}
-
-            <tr>
-
-              <td>
-                {{ service.name }}
-              </td>
-
-              <td>
-
-                <span class="badge {% if service.status == 'Running' %}text-bg-success{% else %}text-bg-danger{% endif %}">
-                  {{ service.status }}
-                </span>
-
-              </td>
-
-            </tr>
-
             {% endfor %}
 
-          </tbody>
+        </div>
 
-        </table>
+    </section>
 
-      </div>
+    <!-- ====================================== -->
+    <!-- SERVICE STATUS -->
+    <!-- ====================================== -->
 
-    </div>
+    <section class="card sentinel-card mb-4">
 
-  </section>
+        <div class="card-body">
 
+            <div class="d-flex justify-content-between align-items-center mb-3">
 
-  <!-- ======================================= -->
-  <!-- SERVER SIMULATIONS -->
-  <!-- ======================================= -->
+                <h2 class="h5 mb-0">
+                    Service Status
+                </h2>
 
-  <section class="card mb-4">
+                <span class="badge text-bg-secondary">
+                    Demo Server
+                </span>
 
-    <div class="card-body">
+            </div>
 
-      <h2 class="h5">
-        Simulate a Server Event
-      </h2>
+            <div class="table-responsive">
 
-      <p class="text-secondary small">
-        These controls change demonstration data only.
-      </p>
+                <table class="table sentinel-table mb-0">
 
-      <div class="d-flex flex-wrap gap-2">
+                    <thead>
+                        <tr>
+                            <th scope="col">Service</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
 
-        <!-- High CPU -->
+                    <tbody>
 
-        <form
-          action="{{ url_for('simulate', event='high_cpu') }}"
-          method="post"
-        >
+                        {% for service in server.services %}
 
-          <button
-            class="btn btn-warning"
-            type="submit"
-          >
-            High CPU
-          </button>
+                        <tr>
 
-        </form>
+                            <td>
+                                <strong>{{ service.name }}</strong>
+                            </td>
 
-        <!-- Disk Warning -->
+                            <td>
 
-        <form
-          action="{{ url_for('simulate', event='disk_warning') }}"
-          method="post"
-        >
+                                {% if service.status == 'Running' %}
 
-          <button
-            class="btn btn-warning"
-            type="submit"
-          >
-            Disk Warning
-          </button>
+                                <span class="badge text-bg-success">
+                                    <span class="status-indicator status-running"></span>
+                                    Running
+                                </span>
 
-        </form>
+                                {% else %}
 
-        <!-- Docker Failure -->
+                                <span class="badge text-bg-danger">
+                                    <span class="status-indicator status-stopped"></span>
+                                    {{ service.status }}
+                                </span>
 
-        <form
-          action="{{ url_for('simulate', event='docker_failure') }}"
-          method="post"
-        >
+                                {% endif %}
 
-          <button
-            class="btn btn-warning"
-            type="submit"
-          >
-            Docker Failure
-          </button>
+                            </td>
 
-        </form>
+                        </tr>
 
-        <!-- Reset Server -->
+                        {% endfor %}
 
-        <form
-          action="{{ url_for('simulate', event='reset') }}"
-          method="post"
-        >
+                    </tbody>
 
-          <button
-            class="btn btn-outline-primary"
-            type="submit"
-          >
-            Reset Server
-          </button>
+                </table>
 
-        </form>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ======================================= -->
-  <!-- ACTIVE SERVER ALERTS -->
-  <!-- ======================================= -->
-
-  <section class="card mb-4">
-
-    <div class="card-body">
-
-      <h2 class="h5">
-        Active Alerts
-      </h2>
-
-      {% if active_alerts %}
-
-        {% for alert in active_alerts %}
-
-        <div class="alert alert-danger mb-2">
-
-          <strong>
-            {{ alert.category }}:
-          </strong>
-
-          {{ alert.message }}
-
-          <a
-            class="btn btn-sm btn-light ms-2"
-            href="{{ url_for('troubleshoot', category=alert.category) }}"
-          >
-            Troubleshoot
-          </a>
+            </div>
 
         </div>
 
-        {% endfor %}
+    </section>
 
-      {% else %}
+    <!-- ====================================== -->
+    <!-- SERVER SIMULATION CONTROLS -->
+    <!-- ====================================== -->
 
-        <div class="alert alert-success mb-0">
-          No active problems detected with server metrics or services.
-        </div>
+    <section class="card sentinel-card mb-4">
 
-      {% endif %}
+        <div class="card-body">
 
-    </div>
+            <h2 class="h5 mb-2">
+                Server Simulation Controls
+            </h2>
 
-  </section>
-
-
-  <!-- ======================================= -->
-  <!-- SECURITY MONITORING SUMMARY -->
-  <!-- ======================================= -->
-
-  <section class="mb-4">
-
-    <h2 class="h4 mb-3">
-      Security Event Monitoring
-    </h2>
-
-    <div class="row g-3">
-
-      <!-- Total Security Events -->
-
-      <div class="col-md-6">
-
-        <div class="card h-100">
-          <div class="card-body">
-
-            <h3 class="h6 text-secondary">
-              Total Simulated Security Events
-            </h3>
-
-            <p class="display-5 mb-0">
-              {{ security_count }}
+            <p class="text-secondary small mb-3">
+                Trigger simulated resource warnings and service failures.
+                These actions do not affect a real server.
             </p>
 
-          </div>
-        </div>
+            <div class="d-flex flex-wrap gap-2 event-controls">
 
-      </div>
+                <form
+                    action="{{ url_for('simulate', event='high_cpu') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-warning">
+                        High CPU
+                    </button>
+                </form>
 
-      <!-- Critical Security Events -->
+                <form
+                    action="{{ url_for('simulate', event='disk_warning') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-warning">
+                        Disk Warning
+                    </button>
+                </form>
 
-      <div class="col-md-6">
+                <form
+                    action="{{ url_for('simulate', event='docker_failure') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-warning">
+                        Docker Failure
+                    </button>
+                </form>
 
-        <div class="card h-100">
-          <div class="card-body">
+                <form
+                    action="{{ url_for('simulate', event='reset') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-outline-primary">
+                        Reset Server
+                    </button>
+                </form>
 
-            <h3 class="h6 text-secondary">
-              Critical Security Events
-            </h3>
-
-            <p class="display-5 text-danger mb-0">
-              {{ critical_count }}
-            </p>
-
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <p class="text-secondary small mt-2">
-      Counts represent historical simulated events,
-      not active real-world threats.
-    </p>
-
-  </section>
-
-
-  <!-- ======================================= -->
-  <!-- DETECTED SECURITY PATTERNS -->
-  <!-- ======================================= -->
-
-  <section class="card mb-4">
-
-    <div class="card-body">
-
-      <h2 class="h5">
-        Detected Security Patterns
-      </h2>
-
-      <p class="text-secondary small">
-        Automated analysis of simulated security events
-        recorded during the last five minutes.
-      </p>
-
-      {% if security_findings %}
-
-        {% for finding in security_findings %}
-
-        <div class="alert {{ 'alert-danger' if finding.severity == 'CRITICAL' else 'alert-warning' }} mb-3">
-
-          <!-- Security Finding Title -->
-
-          <strong>
-            {{ finding.severity }}:
-            {{ finding.category }}
-          </strong>
-
-          <!-- Security Finding Description -->
-
-          <p class="mb-2 mt-2">
-            {{ finding.message }}
-          </p>
-
-          <!-- AI Security Troubleshooting Button -->
-
-          <a
-            href="{{ url_for('troubleshoot', category=finding.category) }}"
-            class="btn btn-sm btn-outline-light mt-2"
-          >
-            Troubleshoot with AI
-          </a>
+            </div>
 
         </div>
 
-        {% endfor %}
+    </section>
 
-      {% else %}
+    <!-- ====================================== -->
+    <!-- ACTIVE SERVER ALERTS -->
+    <!-- ====================================== -->
 
-        <div class="alert alert-success mb-0">
-          No suspicious event patterns detected.
-        </div>
+    <section class="card sentinel-card mb-5">
 
-      {% endif %}
+        <div class="card-body">
 
-    </div>
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
 
-  </section>
+                <h2 class="h5 mb-0">
+                    Active Server Alerts
+                </h2>
 
+                {% if active_alerts %}
 
-  <!-- ======================================= -->
-  <!-- SIMULATE LOG AND SECURITY EVENTS -->
-  <!-- ======================================= -->
-
-  <section class="card mb-4">
-
-    <div class="card-body">
-
-      <h2 class="h5">
-        Simulate Log &amp; Security Events
-      </h2>
-
-      <p class="text-secondary small">
-        Generate sample events for testing the log analyzer
-        and security dashboard.
-        No actual SSH attempts, network scans,
-        or service failures occur.
-      </p>
-
-      <!-- System Logs -->
-
-      <h3 class="h6 mt-3">
-        System &amp; Application Logs
-      </h3>
-
-      <div class="d-flex flex-wrap gap-2 mb-4">
-
-        <!-- Plex Error -->
-
-        <form
-          action="{{ url_for('simulate_log', event='plex_error') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-outline-primary"
-            type="submit"
-          >
-            Plex Playback Error
-          </button>
-
-        </form>
-
-        <!-- Docker Crash -->
-
-        <form
-          action="{{ url_for('simulate_log', event='docker_crash') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-outline-primary"
-            type="submit"
-          >
-            Docker Container Crash
-          </button>
-
-        </form>
-
-        <!-- Disk I/O Warning -->
-
-        <form
-          action="{{ url_for('simulate_log', event='disk_io') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-outline-primary"
-            type="submit"
-          >
-            Disk I/O Warning
-          </button>
-
-        </form>
-
-      </div>
-
-
-      <!-- Security Events -->
-
-      <h3 class="h6">
-        Security Events
-      </h3>
-
-      <div class="d-flex flex-wrap gap-2">
-
-        <!-- Failed SSH Logins -->
-
-        <form
-          action="{{ url_for('simulate_log', event='failed_ssh') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-danger"
-            type="submit"
-          >
-            Failed SSH Logins
-          </button>
-
-        </form>
-
-        <!-- Suspicious Network Activity -->
-
-        <form
-          action="{{ url_for('simulate_log', event='network_activity') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-warning"
-            type="submit"
-          >
-            Suspicious Network Activity
-          </button>
-
-        </form>
-
-        <!-- Unauthorized Access Attempt -->
-
-        <form
-          action="{{ url_for('simulate_log', event='unauthorized_access') }}"
-          method="post"
-        >
-
-          <button
-            class="btn btn-danger"
-            type="submit"
-          >
-            Unauthorized Access Attempt
-          </button>
-
-        </form>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- ======================================= -->
-  <!-- SIMULATED EVENT LOG ANALYZER -->
-  <!-- ======================================= -->
-
-  <section class="card mb-4">
-
-    <div class="card-body">
-
-      <h2 class="h5">
-        Simulated Event Log Analyzer
-      </h2>
-
-      <p class="text-secondary small">
-        Latest 20 generated events, newest first.
-      </p>
-
-      {% if event_logs %}
-
-      <div class="table-responsive">
-
-        <table class="table table-striped align-middle">
-
-          <thead>
-
-            <tr>
-              <th>Time (UTC)</th>
-              <th>Source</th>
-              <th>Severity</th>
-              <th>Event</th>
-              <th>Details</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {% for log in event_logs %}
-
-            <tr>
-
-              <td class="text-nowrap">
-                {{ log.created_at }}
-              </td>
-
-              <td>
-                {{ log.source }}
-              </td>
-
-              <td>
-
-                {% if log.severity == 'CRITICAL' %}
-
-                  <span class="badge text-bg-danger">
-                    CRITICAL
-                  </span>
-
-                {% elif log.severity == 'ERROR' %}
-
-                  <span class="badge text-bg-danger">
-                    ERROR
-                  </span>
-
-                {% elif log.severity == 'WARNING' %}
-
-                  <span class="badge text-bg-warning">
-                    WARNING
-                  </span>
+                <span class="badge text-bg-danger">
+                    {{ active_alerts|length }} Active
+                </span>
 
                 {% else %}
 
-                  <span class="badge text-bg-success">
-                    {{ log.severity }}
-                  </span>
+                <span class="badge text-bg-success">
+                    Healthy
+                </span>
 
                 {% endif %}
 
-              </td>
+            </div>
 
-              <td>
-                {{ log.category }}
-              </td>
+            {% if active_alerts %}
 
-              <td>
-                {{ log.message }}
-              </td>
+                {% for alert in active_alerts %}
 
-            </tr>
+                <div class="alert alert-danger alert-item mb-3">
 
-            {% endfor %}
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
 
-          </tbody>
+                        <div>
+                            <strong>
+                                {{ alert.category }}
+                            </strong>
 
-        </table>
+                            <p class="mb-0 mt-1">
+                                {{ alert.message }}
+                            </p>
+                        </div>
 
-      </div>
+                        <span class="badge text-bg-danger">
+                            ACTIVE
+                        </span>
 
-      {% else %}
+                    </div>
 
-      <p class="text-secondary mb-0">
-        No simulated log events recorded yet.
-        Use one of the buttons above to generate an event.
-      </p>
+                    <div class="alert-action">
 
-      {% endif %}
+                        <a
+                            class="btn btn-sm btn-light"
+                            href="{{ url_for('troubleshoot', category=alert.category) }}"
+                        >
+                            Troubleshoot with AI
+                        </a>
 
-    </div>
+                    </div>
 
-  </section>
+                </div>
 
+                {% endfor %}
 
-  <!-- ======================================= -->
-  <!-- ALERT HISTORY -->
-  <!-- ======================================= -->
+            {% else %}
 
-  <section class="card">
+                <div class="alert alert-success mb-0">
+                    No active problems detected with server metrics or services.
+                </div>
 
-    <div class="card-body">
+            {% endif %}
 
-      <h2 class="h5">
-        Alert History
-      </h2>
+        </div>
 
-      {% if history %}
+    </section>
 
-      <div class="table-responsive">
+    <!-- ====================================== -->
+    <!-- SECURITY MONITORING -->
+    <!-- ====================================== -->
 
-        <table class="table table-striped">
+    <section class="mb-4" aria-labelledby="security-heading">
 
-          <thead>
+        <h2 id="security-heading" class="h4 section-heading">
+            Security Event Monitoring
+        </h2>
 
-            <tr>
-              <th>Time (UTC)</th>
-              <th>Event</th>
-              <th>Details</th>
-            </tr>
+        <p class="text-secondary small mb-3">
+            Summary of generated security events.
+            These are historical simulation counts, not live threats.
+        </p>
 
-          </thead>
+        <div class="row g-3">
 
-          <tbody>
+            <div class="col-md-6">
 
-            {% for item in history %}
+                <div class="card metric-card">
 
-            <tr>
+                    <div class="card-body">
 
-              <td>
-                {{ item.created_at }}
-              </td>
+                        <h3 class="metric-label mb-3">
+                            Total Simulated Security Events
+                        </h3>
 
-              <td>
-                {{ item.category }}
-              </td>
+                        <div class="metric-value">
+                            {{ security_count }}
+                        </div>
 
-              <td>
-                {{ item.message }}
-              </td>
+                        <div class="metric-note mt-2">
+                            All recorded security events
+                        </div>
 
-            </tr>
+                    </div>
 
-            {% endfor %}
+                </div>
 
-          </tbody>
+            </div>
 
-        </table>
+            <div class="col-md-6">
 
-      </div>
+                <div class="card metric-card">
 
-      {% else %}
+                    <div class="card-body">
 
-      <p class="text-secondary mb-0">
-        No events recorded yet.
-      </p>
+                        <h3 class="metric-label mb-3">
+                            Critical Security Events
+                        </h3>
 
-      {% endif %}
+                        <div class="metric-value text-danger">
+                            {{ critical_count }}
+                        </div>
 
-    </div>
+                        <div class="metric-note mt-2">
+                            Events classified as critical
+                        </div>
 
-  </section>
+                    </div>
 
+                </div>
 
-  <!-- ======================================= -->
-  <!-- FOOTER -->
-  <!-- ======================================= -->
+            </div>
 
-  <p class="mt-4 text-secondary small">
-    HomeLab Sentinel — Simulated server monitoring,
-    event logging, security scenarios,
-    and knowledge-grounded AI troubleshooting.
-  </p>
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- DETECTED SECURITY PATTERNS -->
+    <!-- ====================================== -->
+
+    <section class="card sentinel-card mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+                <h2 class="h5 mb-0">
+                    Detected Security Patterns
+                </h2>
+
+                {% if security_findings %}
+
+                <span class="badge text-bg-danger">
+                    {{ security_findings|length }} Finding(s)
+                </span>
+
+                {% else %}
+
+                <span class="badge text-bg-success">
+                    No Active Findings
+                </span>
+
+                {% endif %}
+
+            </div>
+
+            <p class="text-secondary small mb-3">
+                Rule-based analysis of simulated security events
+                recorded within the last five minutes.
+            </p>
+
+            {% if security_findings %}
+
+                {% for finding in security_findings %}
+
+                <div
+                    class="alert alert-item
+                    {{ 'alert-danger' if finding.severity == 'CRITICAL' else 'alert-warning' }}
+                    mb-3"
+                >
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2">
+
+                        <strong>
+                            {{ finding.category }}
+                        </strong>
+
+                        <span
+                            class="badge
+                            {{ 'text-bg-danger' if finding.severity == 'CRITICAL' else 'text-bg-warning' }}"
+                        >
+                            {{ finding.severity }}
+                        </span>
+
+                    </div>
+
+                    <p class="mt-2 mb-2">
+                        {{ finding.message }}
+                    </p>
+
+                    <a
+                        href="{{ url_for('troubleshoot', category=finding.category) }}"
+                        class="btn btn-sm btn-dark mt-1"
+                    >
+                        Troubleshoot with AI
+                    </a>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="alert alert-success mb-0">
+                    No suspicious event patterns detected.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- EVENT SIMULATION CONTROLS -->
+    <!-- ====================================== -->
+
+    <section class="card sentinel-card mb-4">
+
+        <div class="card-body">
+
+            <h2 class="h5 mb-2">
+                Event Simulation Controls
+            </h2>
+
+            <p class="text-secondary small mb-4">
+                Generate sample application and security logs.
+                No real SSH attempts, network scans, or service failures occur.
+            </p>
+
+            <h3 class="h6 mb-3">
+                System &amp; Application Logs
+            </h3>
+
+            <div class="d-flex flex-wrap gap-2 event-controls mb-4">
+
+                <form
+                    action="{{ url_for('simulate_log', event='plex_error') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-outline-primary">
+                        Plex Playback Error
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('simulate_log', event='docker_crash') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-outline-primary">
+                        Docker Container Crash
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('simulate_log', event='disk_io') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-outline-primary">
+                        Disk I/O Warning
+                    </button>
+                </form>
+
+            </div>
+
+            <hr>
+
+            <h3 class="h6 mt-4 mb-3">
+                Security Events
+            </h3>
+
+            <div class="d-flex flex-wrap gap-2 event-controls">
+
+                <form
+                    action="{{ url_for('simulate_log', event='failed_ssh') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-danger">
+                        Failed SSH Logins
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('simulate_log', event='network_activity') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-warning">
+                        Suspicious Network Activity
+                    </button>
+                </form>
+
+                <form
+                    action="{{ url_for('simulate_log', event='unauthorized_access') }}"
+                    method="post"
+                >
+                    <button type="submit" class="btn btn-danger">
+                        Unauthorized Access Attempt
+                    </button>
+                </form>
+
+            </div>
+
+            <div class="mt-4 pt-3 border-top">
+
+                <form
+                    action="{{ url_for('reset_security_events') }}"
+                    method="post"
+                    onsubmit="return confirm('Clear all simulated security events and their alert history?');"
+                >
+
+                    <button type="submit" class="btn btn-outline-danger">
+                        Reset Security Events
+                    </button>
+
+                </form>
+
+                <p class="text-secondary small mt-2 mb-0">
+                    Clears simulated security logs and their alert history.
+                    Server metrics and application logs are preserved.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- SIMULATED EVENT LOG ANALYZER -->
+    <!-- ====================================== -->
+
+    <section class="card sentinel-card mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+
+                <h2 class="h5 mb-0">
+                    Simulated Event Log Analyzer
+                </h2>
+
+                <span class="badge text-bg-secondary">
+                    Latest 20 Events
+                </span>
+
+            </div>
+
+            <p class="text-secondary small mb-3">
+                Most recent generated events, newest first.
+            </p>
+
+            {% if event_logs %}
+
+            <div class="table-responsive">
+
+                <table class="table table-striped sentinel-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Time (UTC)</th>
+                            <th scope="col">Source</th>
+                            <th scope="col">Severity</th>
+                            <th scope="col">Event</th>
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for log in event_logs %}
+
+                        <tr>
+
+                            <td class="text-nowrap">
+                                {{ log.created_at }}
+                            </td>
+
+                            <td>
+                                <strong>{{ log.source }}</strong>
+                            </td>
+
+                            <td>
+
+                                {% if log.severity == 'CRITICAL' %}
+
+                                    <span class="badge text-bg-danger">
+                                        CRITICAL
+                                    </span>
+
+                                {% elif log.severity == 'ERROR' %}
+
+                                    <span class="badge text-bg-danger">
+                                        ERROR
+                                    </span>
+
+                                {% elif log.severity == 'WARNING' %}
+
+                                    <span class="badge text-bg-warning">
+                                        WARNING
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge text-bg-success">
+                                        {{ log.severity }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+                                {{ log.category }}
+                            </td>
+
+                            <td>
+                                {{ log.message }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <div class="alert alert-info mb-0">
+                    No simulated log events recorded yet.
+                    Use the simulation controls above to generate an event.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- ALERT HISTORY -->
+    <!-- ====================================== -->
+
+    <section class="card sentinel-card mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+
+                <h2 class="h5 mb-0">
+                    Alert History
+                </h2>
+
+                <span class="badge text-bg-secondary">
+                    Latest 15 Records
+                </span>
+
+            </div>
+
+            {% if history %}
+
+            <div class="table-responsive">
+
+                <table class="table table-striped sentinel-table align-middle">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Time (UTC)</th>
+                            <th scope="col">Event</th>
+                            <th scope="col">Details</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in history %}
+
+                        <tr>
+
+                            <td class="text-nowrap">
+                                {{ item.created_at }}
+                            </td>
+
+                            <td>
+                                <strong>{{ item.category }}</strong>
+                            </td>
+
+                            <td>
+                                {{ item.message }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+                <p class="text-secondary mb-0">
+                    No events recorded yet.
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <!-- ====================================== -->
+    <!-- FOOTER -->
+    <!-- ====================================== -->
+
+    <footer class="dashboard-footer">
+
+        <div class="d-flex flex-wrap justify-content-between gap-2">
+
+            <div>
+                <strong>HomeLab Sentinel</strong>
+
+                <p class="text-secondary small mb-0 mt-1">
+                    Simulated server monitoring, event logging,
+                    security analysis, and knowledge-grounded
+                    AI troubleshooting.
+                </p>
+            </div>
+
+            <div class="text-secondary small">
+                Capstone Project | Demo Environment
+            </div>
+
+        </div>
+
+    </footer>
 
 </main>
 
