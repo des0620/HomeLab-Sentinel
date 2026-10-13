@@ -1,5 +1,401 @@
-body { background: #f6f8fb; color: #1a2d46; font-family: Arial, sans-serif; }
-h1 { color: #003366; font-weight: 700; }
-.card { border: 1px solid #e1e6ef; border-radius: 12px; }
-.progress { height: 12px; }
-.progress-bar { background: #2366a8; }
+
+/* ==========================================
+   HomeLab Sentinel — Midnight Blue Theme
+   ========================================== */
+
+:root {
+    --bg: #0B1220;
+    --card-bg: #172338;
+    --card-hover: #1D2D46;
+    --border: #30445F;
+
+    --primary: #2563EB;
+    --accent: #38BDF8;
+
+    --text: #F1F5F9;
+    --muted: #A9B9CE;
+
+    --success: #4ADE80;
+    --warning: #FBBF24;
+    --danger: #FCA5A5;
+}
+
+/* ==========================================
+   Main Page
+   ========================================== */
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text);
+    font-weight: 700;
+}
+
+p {
+    color: inherit;
+}
+
+.text-secondary,
+.text-muted,
+.text-body-secondary {
+    color: var(--muted) !important;
+}
+
+/* ==========================================
+   Dashboard Cards
+   ========================================== */
+
+.card {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color 0.2s ease;
+}
+
+.card:hover {
+    border-color: #456789;
+}
+
+.card-header,
+.card-footer {
+    background-color: transparent;
+    color: var(--text);
+    border-color: var(--border);
+}
+
+.card-title,
+.card-text,
+.card-body {
+    color: var(--text);
+}
+
+/* ==========================================
+   CPU, Memory, and Storage Progress Bars
+   ========================================== */
+
+.progress {
+    height: 12px;
+    background-color: #334155;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--accent);
+    color: #FFFFFF;
+    font-weight: 600;
+}
+
+.progress-bar.bg-success {
+    background-color: #16A34A !important;
+}
+
+.progress-bar.bg-warning {
+    background-color: #F59E0B !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: #DC2626 !important;
+}
+
+/* ==========================================
+   Service Status: Working / Running / Stopped
+   ========================================== */
+
+/* Bright status text */
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+/* Standard Bootstrap status badges */
+.badge.bg-success,
+.bg-success.badge {
+    background-color: #166534 !important;
+    color: #FFFFFF !important;
+}
+
+.badge.bg-danger,
+.bg-danger.badge {
+    background-color: #991B1B !important;
+    color: #FFFFFF !important;
+}
+
+.badge.bg-warning,
+.bg-warning.badge {
+    background-color: #92400E !important;
+    color: #FFFFFF !important;
+}
+
+/* Bootstrap subtle status badges */
+.bg-success-subtle {
+    background-color: #163D2B !important;
+    color: #86EFAC !important;
+}
+
+.bg-danger-subtle {
+    background-color: #4A2028 !important;
+    color: #FECACA !important;
+}
+
+.bg-warning-subtle {
+    background-color: #493512 !important;
+    color: #FDE68A !important;
+}
+
+/* Status text inside cards */
+.card .text-dark,
+.card .text-black {
+    color: var(--text) !important;
+}
+
+/* ==========================================
+   Buttons
+   ========================================== */
+
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #FFFFFF;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #1D4ED8;
+    border-color: #1D4ED8;
+    color: #FFFFFF;
+}
+
+.btn-outline-primary {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+}
+
+.btn-success {
+    background-color: #166534;
+    border-color: #166534;
+    color: #FFFFFF;
+}
+
+.btn-success:hover {
+    background-color: #15803D;
+    border-color: #15803D;
+    color: #FFFFFF;
+}
+
+.btn-danger {
+    background-color: #B91C1C;
+    border-color: #B91C1C;
+    color: #FFFFFF;
+}
+
+.btn-danger:hover {
+    background-color: #991B1B;
+    border-color: #991B1B;
+    color: #FFFFFF;
+}
+
+.btn-warning {
+    background-color: #D97706;
+    border-color: #D97706;
+    color: #FFFFFF;
+}
+
+.btn-warning:hover {
+    background-color: #B45309;
+    border-color: #B45309;
+    color: #FFFFFF;
+}
+
+/* ==========================================
+   Tables and Alert History
+   ========================================== */
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text);
+    --bs-table-border-color: var(--border);
+    --bs-table-striped-bg: #1E3049;
+    --bs-table-striped-color: var(--text);
+    --bs-table-hover-bg: #253B57;
+    --bs-table-hover-color: var(--text);
+}
+
+.table th {
+    color: #BAE6FD;
+    font-weight: 700;
+}
+
+.table td {
+    color: var(--text);
+}
+
+.table-responsive {
+    border-radius: 8px;
+}
+
+/* ==========================================
+   Alert Messages
+   ========================================== */
+
+.alert-info {
+    background-color: #12304A;
+    border-color: #2563EB;
+    color: #BAE6FD;
+}
+
+.alert-warning {
+    background-color: #422D13;
+    border-color: #D97706;
+    color: #FDE68A;
+}
+
+.alert-danger {
+    background-color: #451F2B;
+    border-color: #DC2626;
+    color: #FECACA;
+}
+
+.alert-success {
+    background-color: #163D2B;
+    border-color: #16A34A;
+    color: #BBF7D0;
+}
+
+/* ==========================================
+   AI Troubleshooting Page
+   ========================================== */
+
+.ai-response {
+    color: var(--text);
+    line-height: 1.7;
+}
+
+.ai-response p {
+    margin-bottom: 14px;
+}
+
+.ai-response h1,
+.ai-response h2,
+.ai-response h3,
+.ai-response h4 {
+    color: #7DD3FC;
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+.ai-response ol,
+.ai-response ul {
+    padding-left: 24px;
+}
+
+.ai-response li {
+    margin-bottom: 10px;
+}
+
+.ai-response strong {
+    color: #FFFFFF;
+}
+
+.ai-response code {
+    color: #7DD3FC;
+    background-color: #0B1220;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 0.95em;
+}
+
+.ai-response pre {
+    background-color: #0B1220;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    overflow-x: auto;
+}
+
+.ai-response pre code {
+    padding: 0;
+    background: transparent;
+}
+
+/* ==========================================
+   Local Knowledge Base
+   ========================================== */
+
+.knowledge-base-content {
+    color: #CBD5E1;
+    line-height: 1.8;
+    font-size: 15px;
+}
+
+/* ==========================================
+   Links and Footer
+   ========================================== */
+
+a {
+    color: var(--accent);
+}
+
+a:hover {
+    color: #7DD3FC;
+}
+
+footer,
+footer small {
+    color: var(--muted);
+}
+
+/* ==========================================
+   Dividers and General Elements
+   ========================================== */
+
+hr {
+    border-color: var(--border);
+    opacity: 0.8;
+}
+
+.border {
+    border-color: var(--border) !important;
+}
+
+/* ==========================================
+   Mobile Layout
+   ========================================== */
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .card-body {
+        padding: 18px;
+    }
+
+    .ai-response {
+        font-size: 15px;
+    }
+}
