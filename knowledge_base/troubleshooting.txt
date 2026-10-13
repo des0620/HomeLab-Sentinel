@@ -1,0 +1,34 @@
+# High CPU
+Possible causes: intensive Plex library scanning, transcoding, backups, or another CPU-heavy process.
+Safe checks:
+1. Inspect CPU usage by process using top or htop.
+2. Check Plex dashboard for active library scans or transcodes.
+3. Review container CPU usage using docker stats.
+4. Confirm whether high usage is temporary or sustained.
+5. Avoid terminating processes until their role is understood.
+---
+# High Memory
+Possible causes: memory-intensive containers, caching, or an application memory leak.
+Safe checks:
+1. Review free -h and container memory usage using docker stats.
+2. Identify which processes are consuming memory.
+3. Distinguish normal filesystem cache from memory pressure.
+4. Check application logs before changing settings.
+---
+# Disk Warning
+Possible causes: growing media libraries, downloads, backups, or logs consuming free space.
+Safe checks:
+1. Review disk usage using df -h.
+2. Identify the largest directories and recent growth.
+3. Check download and media-library paths for duplicate or incomplete files.
+4. Verify backups before deleting anything.
+5. Do not delete unfamiliar files or format a disk.
+---
+# Docker Failure
+Possible causes: a crashed container, missing volume mount, port conflict, or invalid configuration.
+Safe checks:
+1. Check container status using docker ps -a.
+2. Review logs with docker logs <container_name>.
+3. Verify mapped volumes and configuration paths.
+4. Check available storage and whether dependent services are running.
+5. Investigate the error before attempting a restart.

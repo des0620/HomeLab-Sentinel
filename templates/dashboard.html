@@ -38,7 +38,7 @@
   <section class="card mb-4"><div class="card-body">
     <h2 class="h5">Active Alerts</h2>
     {% if active_alerts %}{% for alert in active_alerts %}
-      <div class="alert alert-danger mb-2"><strong>{{ alert.category }}:</strong> {{ alert.message }}</div>
+      <div class="alert alert-danger mb-2"><strong>{{ alert.category }}:</strong> {{ alert.message }} <a class="btn btn-sm btn-light ms-2" href="{{ url_for('troubleshoot', category=alert.category) }}">Troubleshoot</a></div>
     {% endfor %}{% else %}<div class="alert alert-success mb-0">No active problems detected.</div>{% endif %}
   </div></section>
   <section class="card"><div class="card-body">
@@ -47,7 +47,7 @@
     {% for item in history %}<tr><td>{{ item.created_at }}</td><td>{{ item.category }}</td><td>{{ item.message }}</td></tr>{% endfor %}
     </tbody></table></div>{% else %}<p class="text-secondary mb-0">No events recorded yet.</p>{% endif %}
   </div></section>
-  <p class="mt-4 text-secondary small">Phase 2: simulated events, rule-based alerts, and SQLite history. AI troubleshooting is planned for Phase 3.</p>
+  <p class="mt-4 text-secondary small">Phase 3: simulated monitoring, alert history, and knowledge-grounded troubleshooting.</p>
 </main>
 </body>
 </html>
