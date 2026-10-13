@@ -1,0 +1,5 @@
+body { background: #f6f8fb; color: #1a2d46; font-family: Arial, sans-serif; }
+h1 { color: #003366; font-weight: 700; }
+.card { border: 1px solid #e1e6ef; border-radius: 12px; }
+.progress { height: 12px; }
+.progress-bar { background: #2366a8; }
