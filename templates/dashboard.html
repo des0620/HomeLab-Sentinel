@@ -1,53 +1,759 @@
+
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <title>HomeLab Sentinel</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+
+  <!-- Midnight Blue Theme -->
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+  >
 </head>
+
 <body>
+
 <main class="container py-5">
-  <header class="mb-4"><h1>HomeLab Sentinel</h1><p class="text-secondary">Server Monitoring Dashboard — Demo Mode</p></header>
-  <div class="alert alert-info">Displaying simulated data for {{ server.name }}. Live monitoring is not enabled.</div>
-  <div class="row g-3 mb-4">
-    {% for label, value in [('CPU Usage', server.cpu), ('Memory Usage', server.memory), ('Storage Usage', server.storage)] %}
-    <div class="col-md-4"><div class="card h-100"><div class="card-body">
-      <h2 class="h6">{{ label }}</h2><p class="display-6">{{ value }}%</p>
-      <div class="progress" role="progressbar" aria-label="{{ label }}" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar {% if value >= 90 %}bg-danger{% endif %}" style="width: {{ value }}%"></div>
-      </div>
-    </div></div></div>
-    {% endfor %}
+
+  <!-- ======================================= -->
+  <!-- HEADER -->
+  <!-- ======================================= -->
+
+  <header class="mb-4">
+
+    <h1>HomeLab Sentinel</h1>
+
+    <p class="text-secondary">
+      Server Monitoring &amp; Security Dashboard — Demo Mode
+    </p>
+
+  </header>
+
+  <!-- Demo Disclaimer -->
+
+  <div class="alert alert-info">
+    Displaying simulated data for Demo Server.
+    Live monitoring and security detection are not enabled.
   </div>
-  <section class="card mb-4"><div class="card-body">
-    <h2 class="h5">Service Status</h2>
-    <table class="table"><thead><tr><th>Service</th><th>Status</th></tr></thead><tbody>
-    {% for service in server.services %}<tr><td>{{ service.name }}</td><td><span class="badge {% if service.status == 'Running' %}text-bg-success{% else %}text-bg-danger{% endif %}">{{ service.status }}</span></td></tr>{% endfor %}
-    </tbody></table>
-  </div></section>
-  <section class="card mb-4"><div class="card-body">
-    <h2 class="h5">Simulate a Server Event</h2><p class="text-secondary small">These controls change demonstration data only.</p>
-    <div class="d-flex flex-wrap gap-2">
-      <form action="{{ url_for('simulate', event='high_cpu') }}" method="post"><button class="btn btn-warning" type="submit">High CPU</button></form>
-      <form action="{{ url_for('simulate', event='disk_warning') }}" method="post"><button class="btn btn-warning" type="submit">Disk Warning</button></form>
-      <form action="{{ url_for('simulate', event='docker_failure') }}" method="post"><button class="btn btn-warning" type="submit">Docker Failure</button></form>
-      <form action="{{ url_for('simulate', event='reset') }}" method="post"><button class="btn btn-outline-primary" type="submit">Reset Server</button></form>
+
+
+  <!-- ======================================= -->
+  <!-- SYSTEM METRICS -->
+  <!-- ======================================= -->
+
+  <section class="mb-4">
+
+    <h2 class="h4 mb-3">
+      System Metrics
+    </h2>
+
+    <div class="row g-3">
+
+      {% for label, value in [
+        ('CPU Usage', server.cpu),
+        ('Memory Usage', server.memory),
+        ('Storage Usage', server.storage)
+      ] %}
+
+      <div class="col-md-4">
+
+        <div class="card h-100">
+          <div class="card-body">
+
+            <h3 class="h6">
+              {{ label }}
+            </h3>
+
+            <p class="display-6">
+              {{ value }}%
+            </p>
+
+            <div
+              class="progress"
+              role="progressbar"
+              aria-label="{{ label }}"
+              aria-valuenow="{{ value }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+
+              <div
+                class="progress-bar {% if value >= 90 %}bg-danger{% endif %}"
+                style="width: {{ value }}%"
+              ></div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      {% endfor %}
+
     </div>
-  </div></section>
-  <section class="card mb-4"><div class="card-body">
-    <h2 class="h5">Active Alerts</h2>
-    {% if active_alerts %}{% for alert in active_alerts %}
-      <div class="alert alert-danger mb-2"><strong>{{ alert.category }}:</strong> {{ alert.message }} <a class="btn btn-sm btn-light ms-2" href="{{ url_for('troubleshoot', category=alert.category) }}">Troubleshoot</a></div>
-    {% endfor %}{% else %}<div class="alert alert-success mb-0">No active problems detected.</div>{% endif %}
-  </div></section>
-  <section class="card"><div class="card-body">
-    <h2 class="h5">Alert History</h2>
-    {% if history %}<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Time (UTC)</th><th>Event</th><th>Details</th></tr></thead><tbody>
-    {% for item in history %}<tr><td>{{ item.created_at }}</td><td>{{ item.category }}</td><td>{{ item.message }}</td></tr>{% endfor %}
-    </tbody></table></div>{% else %}<p class="text-secondary mb-0">No events recorded yet.</p>{% endif %}
-  </div></section>
-  <p class="mt-4 text-secondary small">Phase 3: simulated monitoring, alert history, and knowledge-grounded troubleshooting.</p>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- SERVICE STATUS -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Service Status
+      </h2>
+
+      <div class="table-responsive">
+
+        <table class="table">
+
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            {% for service in server.services %}
+
+            <tr>
+
+              <td>
+                {{ service.name }}
+              </td>
+
+              <td>
+
+                <span class="badge {% if service.status == 'Running' %}text-bg-success{% else %}text-bg-danger{% endif %}">
+                  {{ service.status }}
+                </span>
+
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- SERVER SIMULATIONS -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Simulate a Server Event
+      </h2>
+
+      <p class="text-secondary small">
+        These controls change demonstration data only.
+      </p>
+
+      <div class="d-flex flex-wrap gap-2">
+
+        <!-- High CPU -->
+
+        <form
+          action="{{ url_for('simulate', event='high_cpu') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-warning"
+            type="submit"
+          >
+            High CPU
+          </button>
+
+        </form>
+
+        <!-- Disk Warning -->
+
+        <form
+          action="{{ url_for('simulate', event='disk_warning') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-warning"
+            type="submit"
+          >
+            Disk Warning
+          </button>
+
+        </form>
+
+        <!-- Docker Failure -->
+
+        <form
+          action="{{ url_for('simulate', event='docker_failure') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-warning"
+            type="submit"
+          >
+            Docker Failure
+          </button>
+
+        </form>
+
+        <!-- Reset Server -->
+
+        <form
+          action="{{ url_for('simulate', event='reset') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+          >
+            Reset Server
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- ACTIVE SERVER ALERTS -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Active Alerts
+      </h2>
+
+      {% if active_alerts %}
+
+        {% for alert in active_alerts %}
+
+        <div class="alert alert-danger mb-2">
+
+          <strong>
+            {{ alert.category }}:
+          </strong>
+
+          {{ alert.message }}
+
+          <a
+            class="btn btn-sm btn-light ms-2"
+            href="{{ url_for('troubleshoot', category=alert.category) }}"
+          >
+            Troubleshoot
+          </a>
+
+        </div>
+
+        {% endfor %}
+
+      {% else %}
+
+        <div class="alert alert-success mb-0">
+          No active problems detected with server metrics or services.
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- SECURITY MONITORING SUMMARY -->
+  <!-- ======================================= -->
+
+  <section class="mb-4">
+
+    <h2 class="h4 mb-3">
+      Security Event Monitoring
+    </h2>
+
+    <div class="row g-3">
+
+      <!-- Total Security Events -->
+
+      <div class="col-md-6">
+
+        <div class="card h-100">
+          <div class="card-body">
+
+            <h3 class="h6 text-secondary">
+              Total Simulated Security Events
+            </h3>
+
+            <p class="display-5 mb-0">
+              {{ security_count }}
+            </p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Critical Security Events -->
+
+      <div class="col-md-6">
+
+        <div class="card h-100">
+          <div class="card-body">
+
+            <h3 class="h6 text-secondary">
+              Critical Security Events
+            </h3>
+
+            <p class="display-5 text-danger mb-0">
+              {{ critical_count }}
+            </p>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <p class="text-secondary small mt-2">
+      Counts represent historical simulated events,
+      not active real-world threats.
+    </p>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- DETECTED SECURITY PATTERNS -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Detected Security Patterns
+      </h2>
+
+      <p class="text-secondary small">
+        Automated analysis of simulated security events
+        recorded during the last five minutes.
+      </p>
+
+      {% if security_findings %}
+
+        {% for finding in security_findings %}
+
+        <div class="alert {{ 'alert-danger' if finding.severity == 'CRITICAL' else 'alert-warning' }} mb-3">
+
+          <!-- Security Finding Title -->
+
+          <strong>
+            {{ finding.severity }}:
+            {{ finding.category }}
+          </strong>
+
+          <!-- Security Finding Description -->
+
+          <p class="mb-2 mt-2">
+            {{ finding.message }}
+          </p>
+
+          <!-- AI Security Troubleshooting Button -->
+
+          <a
+            href="{{ url_for('troubleshoot', category=finding.category) }}"
+            class="btn btn-sm btn-outline-light mt-2"
+          >
+            Troubleshoot with AI
+          </a>
+
+        </div>
+
+        {% endfor %}
+
+      {% else %}
+
+        <div class="alert alert-success mb-0">
+          No suspicious event patterns detected.
+        </div>
+
+      {% endif %}
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- SIMULATE LOG AND SECURITY EVENTS -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Simulate Log &amp; Security Events
+      </h2>
+
+      <p class="text-secondary small">
+        Generate sample events for testing the log analyzer
+        and security dashboard.
+        No actual SSH attempts, network scans,
+        or service failures occur.
+      </p>
+
+      <!-- System Logs -->
+
+      <h3 class="h6 mt-3">
+        System &amp; Application Logs
+      </h3>
+
+      <div class="d-flex flex-wrap gap-2 mb-4">
+
+        <!-- Plex Error -->
+
+        <form
+          action="{{ url_for('simulate_log', event='plex_error') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+          >
+            Plex Playback Error
+          </button>
+
+        </form>
+
+        <!-- Docker Crash -->
+
+        <form
+          action="{{ url_for('simulate_log', event='docker_crash') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+          >
+            Docker Container Crash
+          </button>
+
+        </form>
+
+        <!-- Disk I/O Warning -->
+
+        <form
+          action="{{ url_for('simulate_log', event='disk_io') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-outline-primary"
+            type="submit"
+          >
+            Disk I/O Warning
+          </button>
+
+        </form>
+
+      </div>
+
+
+      <!-- Security Events -->
+
+      <h3 class="h6">
+        Security Events
+      </h3>
+
+      <div class="d-flex flex-wrap gap-2">
+
+        <!-- Failed SSH Logins -->
+
+        <form
+          action="{{ url_for('simulate_log', event='failed_ssh') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-danger"
+            type="submit"
+          >
+            Failed SSH Logins
+          </button>
+
+        </form>
+
+        <!-- Suspicious Network Activity -->
+
+        <form
+          action="{{ url_for('simulate_log', event='network_activity') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-warning"
+            type="submit"
+          >
+            Suspicious Network Activity
+          </button>
+
+        </form>
+
+        <!-- Unauthorized Access Attempt -->
+
+        <form
+          action="{{ url_for('simulate_log', event='unauthorized_access') }}"
+          method="post"
+        >
+
+          <button
+            class="btn btn-danger"
+            type="submit"
+          >
+            Unauthorized Access Attempt
+          </button>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- SIMULATED EVENT LOG ANALYZER -->
+  <!-- ======================================= -->
+
+  <section class="card mb-4">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Simulated Event Log Analyzer
+      </h2>
+
+      <p class="text-secondary small">
+        Latest 20 generated events, newest first.
+      </p>
+
+      {% if event_logs %}
+
+      <div class="table-responsive">
+
+        <table class="table table-striped align-middle">
+
+          <thead>
+
+            <tr>
+              <th>Time (UTC)</th>
+              <th>Source</th>
+              <th>Severity</th>
+              <th>Event</th>
+              <th>Details</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for log in event_logs %}
+
+            <tr>
+
+              <td class="text-nowrap">
+                {{ log.created_at }}
+              </td>
+
+              <td>
+                {{ log.source }}
+              </td>
+
+              <td>
+
+                {% if log.severity == 'CRITICAL' %}
+
+                  <span class="badge text-bg-danger">
+                    CRITICAL
+                  </span>
+
+                {% elif log.severity == 'ERROR' %}
+
+                  <span class="badge text-bg-danger">
+                    ERROR
+                  </span>
+
+                {% elif log.severity == 'WARNING' %}
+
+                  <span class="badge text-bg-warning">
+                    WARNING
+                  </span>
+
+                {% else %}
+
+                  <span class="badge text-bg-success">
+                    {{ log.severity }}
+                  </span>
+
+                {% endif %}
+
+              </td>
+
+              <td>
+                {{ log.category }}
+              </td>
+
+              <td>
+                {{ log.message }}
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      {% else %}
+
+      <p class="text-secondary mb-0">
+        No simulated log events recorded yet.
+        Use one of the buttons above to generate an event.
+      </p>
+
+      {% endif %}
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- ALERT HISTORY -->
+  <!-- ======================================= -->
+
+  <section class="card">
+
+    <div class="card-body">
+
+      <h2 class="h5">
+        Alert History
+      </h2>
+
+      {% if history %}
+
+      <div class="table-responsive">
+
+        <table class="table table-striped">
+
+          <thead>
+
+            <tr>
+              <th>Time (UTC)</th>
+              <th>Event</th>
+              <th>Details</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {% for item in history %}
+
+            <tr>
+
+              <td>
+                {{ item.created_at }}
+              </td>
+
+              <td>
+                {{ item.category }}
+              </td>
+
+              <td>
+                {{ item.message }}
+              </td>
+
+            </tr>
+
+            {% endfor %}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      {% else %}
+
+      <p class="text-secondary mb-0">
+        No events recorded yet.
+      </p>
+
+      {% endif %}
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================= -->
+  <!-- FOOTER -->
+  <!-- ======================================= -->
+
+  <p class="mt-4 text-secondary small">
+    HomeLab Sentinel — Simulated server monitoring,
+    event logging, security scenarios,
+    and knowledge-grounded AI troubleshooting.
+  </p>
+
 </main>
+
 </body>
 </html>

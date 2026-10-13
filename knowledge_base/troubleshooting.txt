@@ -32,3 +32,65 @@ Safe checks:
 3. Verify mapped volumes and configuration paths.
 4. Check available storage and whether dependent services are running.
 5. Investigate the error before attempting a restart.
+
+---
+
+Category: Possible Brute-Force Activity
+Description: Multiple simulated failed SSH login event batches were recorded within a short period.
+Possible Causes:
+- An unauthorized user may be attempting to guess SSH credentials.
+- An automated process may be repeatedly attempting authentication.
+- A legitimate user or application may have outdated credentials.
+Safe Investigation Steps:
+1. Review SSH authentication logs for repeated failed login attempts.
+2. Identify the affected username, source IP address, and timestamps if available.
+3. Determine whether the attempts originated from a trusted device.
+4. Verify that SSH uses appropriate authentication controls.
+5. Consider rate limiting or access restrictions after reviewing the evidence.
+6. Escalate suspected unauthorized activity to the system administrator.
+Safety Notes:
+- Do not assume failed logins prove an account was compromised.
+- Do not block addresses or change authentication settings automatically.
+- HomeLab Sentinel uses simulated events and does not inspect real SSH traffic.
+
+---
+
+Category: Repeated Suspicious Network Activity
+Description: Multiple simulated suspicious network activity events were recorded within a short period.
+Possible Causes:
+- Repeated connection attempts to exposed services.
+- Unexpected traffic from an unfamiliar source.
+- A misconfigured application repeatedly attempting connections.
+- Potential reconnaissance or scanning activity.
+Safe Investigation Steps:
+1. Review available firewall and network connection logs.
+2. Identify relevant source and destination addresses and ports.
+3. Compare the activity against expected application behavior.
+4. Check whether affected services are intended to be publicly accessible.
+5. Investigate unusual traffic patterns before taking corrective action.
+6. Escalate unexplained activity for further review.
+Safety Notes:
+- Suspicious activity does not necessarily indicate an attack.
+- Do not automatically block traffic or modify firewall rules.
+- The events in this demonstration are simulated.
+
+---
+
+Category: Unauthorized Access Detected
+Description: A simulated unauthorized access attempt was recorded.
+Possible Causes:
+- Someone may have attempted to access a resource without permission.
+- An application may be using incorrect credentials or permissions.
+- A legitimate user may have attempted an unauthorized operation.
+- An account or service configuration may be incorrect.
+Safe Investigation Steps:
+1. Review authentication and authorization logs.
+2. Identify the affected account, service, and resource if available.
+3. Check whether the attempted access succeeded or was denied.
+4. Compare the activity with expected user and application behavior.
+5. Review relevant account permissions and access policies.
+6. Escalate suspected compromise for investigation.
+Safety Notes:
+- An access attempt alone does not prove a successful compromise.
+- Do not disable accounts, delete data, or change permissions automatically.
+- HomeLab Sentinel does not monitor actual access attempts.
