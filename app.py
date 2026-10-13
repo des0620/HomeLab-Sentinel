@@ -1,10 +1,11 @@
-from flask import Flask, render_template, redirect, url_for, request, abort
+from flask import Flask, render_template, redirect, url_for, abort
 from contextlib import contextmanager
+import markdown
+import bleach
 import sqlite3
 from pathlib import Path
 import os
 import re
-from collections import Counter
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -119,26 +120,44 @@ def retrieve_guidance(category):
 
 
 def generate_ai_guidance(category, evidence):
-    """Optional Gemini explanation. Never allow an AI failure to break the dashboard."""
-    key = os.getenv("GOOGLE_API_KEY", "").strip()
+    """Generate troubleshooting guidance using OpenAI, with a local fallback."""
+
+    key = os.getenv("OPENAI_API_KEY", "").strip()
+
     if not key:
-        return None, "API key not configured. Showing verified local runbook guidance."
+        return None, "OpenAI API key not configured. Showing local runbook guidance."
+
     try:
-        from google import genai
-        client = genai.Client(api_key=key)
-        response = client.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
-            contents=(
+        from openai import OpenAI
+
+        client = OpenAI(api_key=key, timeout=30.0, max_retries=1)
+
+        response = client.responses.create(
+            model=os.getenv("OPENAI_MODEL", "gpt-4.1-mini"),
+            instructions=(
                 "You are a cautious home server troubleshooting assistant. "
-                "Use ONLY the following local runbook. Do not invent commands or causes. "
+                "Use ONLY the provided local runbook. "
+                "Do not invent commands or causes. "
                 "Explain the issue and give numbered, non-destructive troubleshooting steps. "
-                "If the runbook lacks information, say so. Never suggest automatic repair.\n\n"
-                f"Alert: {category}\n\nTrusted runbook:\n{evidence}"
+                "If the runbook lacks information, say so. "
+                "Never suggest automatic repairs."
             ),
+            input=(
+                f"Alert: {category}\n\n"
+                f"Trusted local runbook:\n{evidence}"
+            ),
+            max_output_tokens=500
         )
-        answer = (response.text or "").strip()
-        return (answer or None), (None if answer else "AI returned no response. Showing local guidance.")
+
+        answer = (response.output_text or "").strip()
+
+        if answer:
+            return answer, None
+
+        return None, "AI returned no response. Showing local guidance."
+
     except Exception:
+        app.logger.exception("OpenAI troubleshooting request failed")
         return None, "AI service unavailable. Showing local runbook guidance."
 
 
@@ -147,15 +166,47 @@ def troubleshoot(category):
     # Only allow advice for a currently active alert.
     server = current_state()
     categories = {alert["category"] for alert in active_alerts(server)}
+
     if category not in categories:
         abort(404)
+
     guidance = retrieve_guidance(category)
+
     if guidance is None:
-        return render_template("troubleshoot.html", category=category, guidance=None, ai_text=None,
-                               notice="No matching local troubleshooting guide was found.")
+        return render_template(
+            "troubleshoot.html",
+            category=category,
+            guidance=None,
+            ai_text=None,
+            notice="No matching local troubleshooting guide was found."
+        )
+
     ai_text, notice = generate_ai_guidance(category, guidance["content"])
-    return render_template("troubleshoot.html", category=category, guidance=guidance,
-                           ai_text=ai_text, notice=notice)
+
+    # Convert OpenAI's Markdown into safe, formatted HTML.
+    if ai_text:
+        ai_text = bleach.clean(
+            markdown.markdown(
+                ai_text,
+                extensions=["extra", "sane_lists"]
+            ),
+            tags=[
+                "p", "h1", "h2", "h3", "h4",
+                "strong", "em", "ul", "ol", "li",
+                "code", "pre", "blockquote", "hr"
+            ],
+            attributes={},
+            strip=True
+        )
+
+    return render_template(
+        "troubleshoot.html",
+        category=category,
+        guidance=guidance,
+        ai_text=ai_text,
+        notice=notice
+    )
+
 
 # Database setup also runs when Flask imports the app for testing.
 init_db()

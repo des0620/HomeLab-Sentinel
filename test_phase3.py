@@ -25,13 +25,17 @@ class Phase3Tests(unittest.TestCase):
         self.assertEqual(guide["title"], "Disk Warning")
         self.assertIn("df -h", guide["content"])
 
+    
     def test_cpu_troubleshooting_without_api(self):
         self.client.post("/simulate/high_cpu")
-        with patch.dict("os.environ", {"GOOGLE_API_KEY": ""}):
+
+        with patch.dict("os.environ", {"OPENAI_API_KEY": ""}):
             response = self.client.get("/troubleshoot/High CPU")
+
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Plex library scanning", response.data)
         self.assertIn(b"API key not configured", response.data)
+
 
     def test_no_match(self):
         self.assertIsNone(sentinel.retrieve_guidance("Nonexistent Alert"))
