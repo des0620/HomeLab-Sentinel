@@ -183,6 +183,12 @@ This feature:
 
 The reset feature allows security scenarios to be demonstrated repeatedly without restarting the application or manually editing the database.
 
+### 10. Clear All Alerts and Logs
+
+The dashboard includes a **Clear All Alerts & Logs** control to prepare a clean demonstration environment. After confirmation, it deletes all stored entries from both the Alert History and Simulated Event Log Analyzer, including security events. Security event counters and detected patterns then reflect the cleared log history.
+
+This action **does not reset simulated server metrics or service statuses**. Use **Reset Server** separately to restore the healthy baseline. The database tables and local troubleshooting knowledge base remain intact. Clearing history is irreversible within the application.
+
 ## System Architecture
 
 HomeLab Sentinel uses a lightweight, modular architecture.
@@ -254,76 +260,45 @@ If the OpenAI API is unavailable, the application displays the retrieved local k
 
 ## Installation and Setup
 
-### Prerequisites
+### Quick Start — Windows (Recommended for Demonstration)
 
-- Python 3.9 or newer
-- Git
-- Windows PowerShell or another compatible terminal
-- Internet access for installing dependencies
-- An OpenAI API key (optional for local troubleshooting)
+**Prerequisites:** Windows, Python 3 with virtual environment support, and internet access for the initial installation of dependencies. An OpenAI API key is **optional**.
 
-### Step 1: Clone the Repository
+1. Open the [HomeLab Sentinel GitHub repository](https://github.com/des0620/HomeLab-Sentinel).
+2. Select **Code → Download ZIP** and extract the archive.
+3. Open the extracted project folder and double-click **`Start_HomeLab_Sentinel.bat`**.
+4. Allow the launcher to create a virtual environment and install dependencies on the first run.
+5. The dashboard should open automatically at **http://127.0.0.1:5000**. If it does not, open that address manually.
+6. Keep the launcher terminal window open while using the app. Press **Ctrl+C** in that window to stop it.
+
+The launcher requires the repository's `requirements.txt` and `app.py`. The application uses a local SQLite database and initializes its tables when started.
+
+**AI configuration is optional:** Without an API key, the dashboard and simulations work, and troubleshooting displays relevant local runbook guidance. AI-generated explanations require a valid API key and access to the OpenAI service. Do **not** include personal API credentials in a submitted project.
+
+### Manual Start — PowerShell
+
+If you prefer to start the application manually:
 
 ```powershell
 git clone https://github.com/des0620/HomeLab-Sentinel.git
-```
-
-### Step 2: Open the Project Directory
-
-```powershell
 cd HomeLab-Sentinel
-```
-
-### Step 3: Create a Virtual Environment
-
-```powershell
 python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe app.py
 ```
 
-### Step 4: Activate the Virtual Environment
+Then open **http://127.0.0.1:5000**.
 
-In Windows PowerShell:
+### Optional OpenAI Setup
 
-```powershell
-.\.venv\Scripts\Activate.ps1
-```
-
-### Step 5: Install Dependencies
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-### Step 6: Configure OpenAI (Optional)
-
-Create a `.env` file in the project directory.
-
-Add:
+Create a `.env` file in the project directory with:
 
 ```dotenv
 OPENAI_API_KEY=your_api_key_here
 OPENAI_MODEL=gpt-4.1-mini
 ```
 
-Replace `your_api_key_here` with your own API key.
-
-The application can still provide local troubleshooting guidance without an API key.
-
-**Never upload your real `.env` file or API credentials to GitHub.**
-
-### Step 7: Start the Application
-
-```powershell
-python app.py
-```
-
-### Step 8: Open the Dashboard
-
-Open a web browser and navigate to:
-
-http://127.0.0.1:5000
-
-The HomeLab Sentinel dashboard should display the default simulated server state.
+Never commit your real `.env` file or API credentials to GitHub. If the key is missing or the AI service is unavailable, the application displays local troubleshooting guidance instead.
 
 ## Demonstration Scenarios
 
@@ -383,6 +358,16 @@ Each click generates a simulated batch of failed SSH attempts.
 
 This demonstrates selective event management and preservation of unrelated data.
 
+### Scenario 7: Prepare a Clean Demonstration
+
+1. Click **Reset Server** to restore the default CPU, memory, storage, and service states.
+2. Click **Reset Security Events** if needed to clear the security scenario.
+3. Click **Clear All Alerts & Logs** and confirm the action.
+4. Verify that the event log analyzer and alert history are empty and that security counters show zero.
+5. Begin the presentation with the clean dashboard, then simulate server problems and security events.
+
+The history-clearing action removes stored demonstration records; it does not itself reset server conditions.
+
 ## Automated Testing
 
 HomeLab Sentinel includes automated tests developed using Python's `unittest` framework.
@@ -414,7 +399,7 @@ python -m unittest -v test_phase2 test_phase3 test_phase5
 
 ### Latest Verified Test Result
 
-**26 tests executed — 26 passed.**
+**26 tests executed — 26 passed** in the previously verified test run. The new history-clearing control should also be checked manually and covered by automated tests before final submission.
 
 The tests use temporary SQLite databases to avoid modifying the application's actual demonstration data.
 
@@ -484,13 +469,13 @@ The project was developed incrementally through several functional phases:
 | Phase 3 | Local troubleshooting knowledge base |
 | Phase 4 | OpenAI integration and safe troubleshooting output |
 | Phase 5 | Simulated event logging and security pattern detection |
-| Final Improvements | Security reset, expanded automated testing, and dashboard refinement |
+| Final Improvements | Security reset, one-click Windows launcher, clear-all-history control, expanded testing, and dashboard refinement |
 
 The project demonstrates an iterative software development process that includes implementation, testing, debugging, and documentation.
 
 ## Screenshots
 
-Screenshots of the completed dashboard and troubleshooting interface will be added to document the final application.
+Screenshots of the dashboard, security scenarios, troubleshooting responses, and automated tests are included in the project documentation. Repository screenshots can be added separately if desired.
 
 Recommended screenshots include:
 
@@ -499,6 +484,10 @@ Recommended screenshots include:
 - Security monitoring with detected suspicious activity
 - Simulated event log analyzer
 - AI-assisted troubleshooting page
+
+## Video Demonstration
+
+The final narrated walkthrough will demonstrate the dashboard, two server troubleshooting scenarios, simulated security detection, event logs, and lessons learned. **YouTube link:** to be added after recording.
 
 ## Author
 
