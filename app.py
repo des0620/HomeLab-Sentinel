@@ -882,6 +882,15 @@ def reset_security_events():
     return redirect(url_for("dashboard"), code=303)
 
 
+@app.post("/clear-history")
+def clear_history():
+    """Clear stored alert and event history without changing simulation state."""
+    with connect_db() as connection:
+        connection.execute("DELETE FROM alerts")
+        connection.execute("DELETE FROM event_logs")
+    return redirect(url_for("dashboard"), code=303)
+
+
 def retrieve_guidance(category):
 
     """
