@@ -485,9 +485,15 @@ Recommended screenshots include:
 - Simulated event log analyzer
 - AI-assisted troubleshooting page
 
+
 ## Video Demonstration
 
-The final narrated walkthrough will demonstrate the dashboard, two server troubleshooting scenarios, simulated security detection, event logs, and lessons learned. **YouTube link:** to be added after recording.
+Watch the completed HomeLab Sentinel capstone presentation:
+
+**[HomeLab Sentinel — Capstone Video Demonstration](https://youtu.be/euqe2AhAe8E)**
+
+The demonstration covers server monitoring, simulated system failures, AI-assisted troubleshooting, security event detection, alert and event log analysis, and future improvements.
+
 
 ## Author
 
